@@ -37,6 +37,9 @@ kotlin {
     }
 
     sourceSets {
+        val retrofitVersion = "2.9.0"
+        val gsonConverterVersion = "2.9.0"
+
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
@@ -46,48 +49,44 @@ kotlin {
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
 
-                // Solo lo que funciona para todos (incluido wasm)
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-            }
-        }
 
-        // Este nuevo source set es para los targets que no son wasm
-        val commonNonWasmMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                implementation("io.ktor:ktor-client-core:2.3.8")
-                implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
+                implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+                implementation("com.squareup.retrofit2:converter-gson:$gsonConverterVersion")
             }
         }
 
         val androidMain by getting {
-            dependsOn(commonNonWasmMain)
             dependencies {
                 implementation(compose.preview)
                 implementation(libs.androidx.activity.compose)
 
-                implementation("io.ktor:ktor-client-okhttp:2.3.8")
+                // AndroidX ViewModel solo en Android
+                implementation("androidx.lifecycle:lifecycle-viewmodel:2.6.2")
+
+                // Retrofit
+                implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+                implementation("com.squareup.retrofit2:converter-gson:$gsonConverterVersion")
+
+                // Coil para imágenes
                 implementation("io.coil-kt:coil-compose:2.5.0")
             }
         }
 
         val desktopMain by getting {
-            dependsOn(commonNonWasmMain)
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.coroutines.swing)
 
-                implementation("io.ktor:ktor-client-cio:2.3.8")
+                // Retrofit JVM
+                implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+                implementation("com.squareup.retrofit2:converter-gson:$gsonConverterVersion")
             }
         }
 
         val wasmJsMain by getting {
-            // NO depende de commonNonWasmMain
-            // Solo de commonMain
             dependencies {
-                // wasm todavía no soporta ktor estable
-                // aquí puedes usar fetch() o Ktor experimental si lo deseas
+                // Nada de Retrofit aquí
             }
         }
     }

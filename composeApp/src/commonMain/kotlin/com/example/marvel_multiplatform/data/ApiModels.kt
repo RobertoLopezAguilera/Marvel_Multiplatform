@@ -1,16 +1,17 @@
-package com.example.marvel_multiplatform.api
+package com.example.marvel_multiplatform.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class MarvelResponse<T>(
     val code: Int,
     val status: String,
-    val data: DataContainer<T>
+    val data: MarvelDataContainer<T>
 )
 
 @Serializable
-data class DataContainer<T>(
+data class MarvelDataContainer<T>(
     val offset: Int,
     val limit: Int,
     val total: Int,
@@ -19,11 +20,11 @@ data class DataContainer<T>(
 )
 
 @Serializable
-data class Character(
+data class Personaje(
     val id: Int,
     val name: String,
     val description: String,
-    val thumbnail: Thumbnail
+    @SerialName("thumbnail") val thumbnail: Thumbnail
 )
 
 @Serializable
@@ -31,5 +32,5 @@ data class Thumbnail(
     val path: String,
     val extension: String
 ) {
-    fun getUrl() = "$path.$extension".replace("http://", "https://")
+    fun getUrl(): String = "$path.$extension".replace("http://", "https://")
 }
